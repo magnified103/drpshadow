@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drpshadow"
+version = "0.0.1"
+description = "DRP network simulator"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/magnified103/drpshadow"
+Issues = "https://github.com/magnified103/drpshadow/issues"
