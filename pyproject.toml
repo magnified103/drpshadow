@@ -8,6 +8,10 @@ version = "0.0.1"
 description = "DRP network simulator"
 readme = "README.md"
 requires-python = ">=3.8"
+dependencies = [
+  "PyYAML",
+  "networkx",
+]
 
 [project.urls]
 Homepage = "https://github.com/magnified103/drpshadow"
