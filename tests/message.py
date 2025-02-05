@@ -15,6 +15,7 @@ network.write("network.gml")
 config = {
     "general": {
         "stop_time": "5 min",
+        "bootstrap_end_time": "20 sec",
         "progress": True,
         "model_unblocked_syscall_latency": True,
     },
@@ -45,7 +46,7 @@ for i in range(8):
         ],
     }
 
-for i in range(20):
+for i in range(10):
     ip_addr = f"12.{i//5}.{i%5}.1"
     config["hosts"][f"node{i:02}"] = {
         "ip_addr": ip_addr,

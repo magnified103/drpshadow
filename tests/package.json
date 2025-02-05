@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ts-drp/blueprints": "link:../ts-drp/packages/blueprints",
     "@ts-drp/node": "link:../ts-drp/packages/node",
     "commander": "^13.1.0"
   }

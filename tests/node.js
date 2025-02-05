@@ -1,5 +1,6 @@
 import { Command, Option } from "commander";
 import { DRPNode } from "@ts-drp/node";
+import { SetDRP } from "@ts-drp/blueprints";
 
 export const program = new Command();
 program.version("0.0.1");
@@ -8,6 +9,8 @@ program.addOption(
 	new Option("--ip <address>", "IPv4 address of the node"),
 );
 program.addOption(new Option("--seed <seed>", "private key seed"));
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 program.parse(process.args);
 const opts = program.opts();
@@ -29,3 +32,21 @@ const node = new DRPNode({
 });
 
 await node.start();
+
+await delay(30000);
+
+const obj = await node.connectObject({
+	id: "123",
+	drp: new SetDRP(),
+});
+
+await delay(10000);
+
+const drp = obj.drp;
+
+let value = 0
+
+setInterval(() => {
+	drp.add(value);
+	value += 1
+}, 50);
