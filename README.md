@@ -12,6 +12,22 @@ git submodule update --init --recursive
 pip install -e .
 ```
 
+Build js-libp2p
+```sh
+cd ./js-libp2p
+npm install
+npm run build
+cd ..
+```
+
+Build ts-drp (in this step some examples could be fail to build)
+```sh
+cd ./ts-drp
+pnpm install
+pnpm build
+cd ..
+```
+
 Generate Shadow config
 
 ```sh

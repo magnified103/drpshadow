@@ -155,21 +155,21 @@ DEFAULT_CONFIG.add_reliability(
     ),
 )
 DEFAULT_CONFIG.add_reliability(
-    "laggy",
-    Reliability(
-        added_latency=300,
-        added_packet_loss=0.05,
-        bandwidth_up="50 Mbit",
-        bandwidth_down="50 Mbit",
-    ),
-)
-DEFAULT_CONFIG.add_reliability(
     "constrained",
     Reliability(
         added_latency=20,
         added_packet_loss=0.001,
         bandwidth_up="5 Mbit",
         bandwidth_down="5 Mbit",
+    ),
+)
+DEFAULT_CONFIG.add_reliability(
+    "laggy",
+    Reliability(
+        added_latency=300,
+        added_packet_loss=0.05,
+        bandwidth_up="50 Mbit",
+        bandwidth_down="50 Mbit",
     ),
 )
 DEFAULT_CONFIG.add_reliability(

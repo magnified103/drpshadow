@@ -1,0 +1,8 @@
+.vscode
+.venv
+*.egg-info
+__pycache__
+node_modules
+shadow.yaml
+*.gml
+shadow.data

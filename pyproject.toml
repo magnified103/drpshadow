@@ -11,6 +11,8 @@ requires-python = ">=3.8"
 dependencies = [
   "PyYAML",
   "networkx",
+  "numpy",
+  "matplotlib",
 ]
 
 [project.urls]

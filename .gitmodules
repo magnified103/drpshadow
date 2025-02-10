@@ -1,3 +1,6 @@
 [submodule "ts-drp"]
 	path = ts-drp
 	url = https://github.com/topology-foundation/ts-drp.git
+[submodule "js-libp2p"]
+	path = js-libp2p
+	url = https://github.com/magnified103/js-libp2p.git

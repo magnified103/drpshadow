@@ -12,7 +12,18 @@
   "license": "ISC",
   "dependencies": {
     "@ts-drp/blueprints": "link:../ts-drp/packages/blueprints",
+    "@ts-drp/logger": "link:../ts-drp/packages/logger",
     "@ts-drp/node": "link:../ts-drp/packages/node",
-    "commander": "^13.1.0"
+    "@ts-drp/object": "link:../ts-drp/packages/object",
+    "commander": "^13.1.0",
+    "race-event": "^1.3.0",
+    "vite": "^6.1.0",
+    "vite-plugin-node-polyfills": "^0.23.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.26.7",
+    "babelify": "^10.0.0",
+    "browserify": "^17.0.1",
+    "rollup": "^4.34.4"
   }
 }
