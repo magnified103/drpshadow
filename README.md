@@ -8,6 +8,7 @@ Install DRPshadow
 ```sh
 git clone https://github.com/magnified103/drpshadow.git
 cd drpshadow
+git checkout temp_work
 git submodule update --init --recursive
 pip install -e .
 ```
