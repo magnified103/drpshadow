@@ -1,6 +1,6 @@
 import re
 
-N = 20
+N = 40
 
 class HostInfo:
     def __init__(self, host_id):
@@ -12,6 +12,7 @@ class VertexInfo:
     def __init__(self):
         self.creation_timestamp = None
         self.finality_info = []
+        self.merge_info = []
         self.host = None
 
 vertices = {}
@@ -29,6 +30,9 @@ for i in range(N):
             vertices.setdefault(hash, VertexInfo())
             vertices[hash].creation_timestamp = int(timestamp)
             vertices[hash].host = HostInfo(i)
+        for hash, timestamp in re.findall(r"INFO: node: Vertex (\w+) merged at (\d+)", data):
+            vertices.setdefault(hash, VertexInfo())
+            vertices[hash].merge_info.append((int(timestamp), HostInfo(i)))
         for hash, timestamp in re.findall(r"INFO: node: Vertex (\w+) finalized at (\d+)", data):
             vertices.setdefault(hash, VertexInfo())
             vertices[hash].finality_info.append((int(timestamp), HostInfo(i)))
@@ -72,7 +76,7 @@ fig, axs = plt.subplots(3, 2)
 
 
 for i, dist in enumerate(by_reliability):
-    axs[i // 2, i % 2].hist(dist, bins=np.arange(200, 1000, 50), alpha=0.5)
+    axs[i // 2, i % 2].hist(dist, bins=np.arange(5000, 35000, 1000), alpha=0.5)
     axs[i // 2, i % 2].set_title(RELIABILITIES[i])
 fig.delaxes(axs[2, 1])
 

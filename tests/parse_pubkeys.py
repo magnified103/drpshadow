@@ -10,7 +10,7 @@ args = parser.parse_args()
 logger = logging.getLogger("parse_pubkeys")
 
 args.output.write("export const admins = new Map();\n")
-for i in range(40):
+for i in range(15):
     log_file = f"shadow.data/hosts/node{i:02}/node.1000.stdout"
     admins = {}
 

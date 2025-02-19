@@ -3,7 +3,8 @@ import { DRPNode } from "@ts-drp/node";
 import { SetDRP } from "@ts-drp/blueprints";
 import { Logger } from "@ts-drp/logger";
 import { ObjectACL } from "@ts-drp/object";
-import { admins } from "./admins.js";
+// import { admins } from "./admins.js";
+
 // import { raceEvent } from "race-event";
 
 const log = new Logger("node:", {
@@ -64,14 +65,24 @@ log.info("Credential: ", node.credentialStore.getPublicCredential())
 const libp2pNode = node.networkNode["_node"]
 // await raceEvent(libp2pNode, 'transport:listening')
 
-await delay(30000);
+await delay(25000);
 
-const obj = await node.connectObject({
-    id: "123",
-    acl: new ObjectACL({
-        admins
-    }),
+// const obj = await node.connectObject({
+//     id: "123",
+//     acl: new ObjectACL({
+//         admins
+//     }),
+//     drp: new SetDRP(),
+//     config: {
+//         log_config: {
+//             template: "[%t] %l: %n"
+//         }
+//     }
+// });
+const obj = await node.createObject({
     drp: new SetDRP(),
+    acl: new ObjectACL({ admins: new Map(), permissionless: true }),
+    id: "123",
     config: {
         log_config: {
             template: "[%t] %l: %n"
@@ -86,6 +97,12 @@ obj.finalityStore.subscribe((hashes) => {
 	}
 });
 obj.subscribe((object, origin, vertices) => {
+    if (origin === "merge") {
+        const now = Date.now();
+		for (const vertex of vertices) {
+			log.info(`Vertex ${vertex.hash} merged at ${now}`);
+		}
+    }
 	if (origin === "callFn") {
 		const now = Date.now();
 		for (const vertex of vertices) {
@@ -94,11 +111,17 @@ obj.subscribe((object, origin, vertices) => {
 	}
 });
 
+await delay(5000);
+
 const drp = obj.drp;
 
 let value = digestMessage(opts.seed);
 
-setInterval(() => {
+const interval = setInterval(() => {
     drp.add(value);
     value = digestMessage(value);
-}, 200);
+}, 500);
+
+setTimeout(() => {
+    clearInterval(interval);
+}, 15000);

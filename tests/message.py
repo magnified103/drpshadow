@@ -8,13 +8,13 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
-network = DrpNetwork(deepcopy(DEFAULT_CONFIG))
+network = DrpNetwork(deepcopy(DEFAULT_NETWORK_CONFIG))
 
 network.write("network.gml")
 
 config = {
     "general": {
-        "stop_time": "2 min",
+        "stop_time": "90 sec",
         "progress": True,
         "model_unblocked_syscall_latency": True,
     },
@@ -45,9 +45,9 @@ for i in range(8):
         ],
     }
 
-for i in range(40):
-    node_id = i % 40
-    ip_addr = f"12.{node_id//5}.{node_id%5}.{i//40+1}"
+for i in range(42):
+    node_id = i % 21
+    ip_addr = f"12.{node_id//3}.{node_id%3}.{i//21+1}"
     config["hosts"][f"node{i:02}"] = {
         "ip_addr": ip_addr,
         "network_node_id": node_id,
