@@ -1,64 +1,44 @@
-from drpshadow import *
-from copy import deepcopy
-from yaml import load, dump
-import os
+from drpshadow.ethshadow import get_default_network
+from drpshadow.shadow import DrpShadow
+from drpshadow.host import Host
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
+network = get_default_network()
+network.build_zones_and_links()
 
-network = DrpNetwork(deepcopy(DEFAULT_NETWORK_CONFIG))
+drpshadow = DrpShadow(
+    network,
+    "90 sec",
+    template_directory="template",
+)
 
-network.write("network.gml")
+index = 0
 
-config = {
-    "general": {
-        "stop_time": "90 sec",
-        "progress": True,
-        "model_unblocked_syscall_latency": True,
-    },
-    "network": {
-        "use_shortest_path": False,
-        "graph": {
-            "type": "gml",
-            "file": {"path": "network.gml"},
-        },
-    },
-    "hosts": {},
-}
+for zone in network.filter_zones(reliability="reliable"):
+    host = Host(
+        f"bootstrap-{zone.name}",
+        zone,
+    )
+    host.add_process(
+        "/usr/bin/node",
+        f"{drpshadow.data_directory}/bootstrap.js --ip {host.ip_addr} --seed bootstrap{index:02}",
+        {"DEBUG": "libp2p:*yamux*"},
+        "running",
+    )
+    drpshadow.add_host(host)
+    index += 1
 
-cwd = os.path.dirname(os.path.realpath(__file__))
+for zone in network.filter_zones(reliability__in=["reliable", "home", "constrained"]):
+    for i in range(2):
+        host = Host(
+            f"node-{zone.name}-{i}",
+            zone,
+        )
+        host.add_process(
+            "/usr/bin/node",
+            f"{drpshadow.data_directory}/node.js --ip {host.ip_addr} --seed {host.name}",
+            {"DEBUG": "libp2p:*yamux*"},
+            "running",
+        )
+        drpshadow.add_host(host)
 
-for i in range(8):
-    ip_addr = f"11.{i}.0.1"
-    config["hosts"][f"bootstrap{i:02}"] = {
-        "ip_addr": ip_addr,
-        "network_node_id": i * 5,
-        "processes": [
-            {
-                "path": "/usr/bin/node",
-                "args": f"{cwd}/bootstrap.js --ip {ip_addr} --seed bootstrap{i:02}",
-                "environment": {"DEBUG": "libp2p:*yamux*"},
-                "expected_final_state": "running",
-            }
-        ],
-    }
-
-for i in range(42):
-    node_id = i % 21
-    ip_addr = f"12.{node_id//3}.{node_id%3}.{i//21+1}"
-    config["hosts"][f"node{i:02}"] = {
-        "ip_addr": ip_addr,
-        "network_node_id": node_id,
-        "processes": [
-            {
-                "path": "/usr/bin/node",
-                "args": f"{cwd}/node.js --ip {ip_addr} --seed node{i:02}",
-                "environment": {"DEBUG": "libp2p:*yamux*"},
-                "expected_final_state": "running",
-            }
-        ],
-    }
-
-dump(config, open("shadow.yaml", "w"), Dumper=Dumper)
+drpshadow.generate_yaml()
