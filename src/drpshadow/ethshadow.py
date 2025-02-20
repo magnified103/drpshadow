@@ -51,12 +51,14 @@ class EthShadowNetwork(Network):
     def filter_zones(
         self,
         location: str = None,
+        location__in: list[str] = None,
         reliability: str = None,
         reliability__in: list[str] = None,
     ):
         for zone in self.zones:
             if (
                 (location is None or zone.location_name == location)
+                and (location__in is None or zone.location_name in location__in)
                 and (reliability is None or zone.reliability_name == reliability)
                 and (
                     reliability__in is None or zone.reliability_name in reliability__in

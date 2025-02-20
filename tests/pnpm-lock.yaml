@@ -14,12 +14,18 @@ importers:
       '@ts-drp/logger':
         specifier: link:../ts-drp/packages/logger
         version: link:../ts-drp/packages/logger
+      '@ts-drp/network':
+        specifier: link:../ts-drp/packages/network
+        version: link:../ts-drp/packages/network
       '@ts-drp/node':
         specifier: link:../ts-drp/packages/node
         version: link:../ts-drp/packages/node
       '@ts-drp/object':
         specifier: link:../ts-drp/packages/object
         version: link:../ts-drp/packages/object
+      '@ts-drp/types':
+        specifier: link:../ts-drp/packages/types
+        version: link:../ts-drp/packages/types
       commander:
         specifier: ^13.1.0
         version: 13.1.0

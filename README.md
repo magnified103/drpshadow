@@ -47,7 +47,8 @@ Generate Shadow config
 ```sh
 cd tests
 pnpm install
-python3 message.py  # this generates two files: shadow.yaml and network.gml
+cd pubsub-0
+python3 generate.py  # this generates two files: shadow.yaml and network.gml
 ```
 
 Run the simulation task

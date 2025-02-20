@@ -1,5 +1,6 @@
 import { Command, Option } from "commander";
 import { DRPNode } from "@ts-drp/node";
+import { MessagesPb } from "@ts-drp/types";
 import { SetDRP } from "@ts-drp/blueprints";
 import { Logger } from "@ts-drp/logger";
 import { ObjectACL } from "@ts-drp/object";
@@ -18,6 +19,7 @@ program.addOption(
     new Option("--ip <address>", "IPv4 address of the node"),
 );
 program.addOption(new Option("--seed <seed>", "private key seed"));
+program.addOption(new Option("--topic <topic>", "topic to subscribe to"));
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 async function digestMessage(message) {
@@ -67,59 +69,27 @@ const libp2pNode = node.networkNode["_node"]
 
 await delay(25000);
 
-// const obj = await node.connectObject({
-//     id: "123",
-//     acl: new ObjectACL({
-//         admins
-//     }),
-//     drp: new SetDRP(),
-//     config: {
-//         log_config: {
-//             template: "[%t] %l: %n"
-//         }
-//     }
-// });
-const obj = await node.createObject({
-    drp: new SetDRP(),
-    acl: new ObjectACL({ admins: new Map(), permissionless: true }),
-    id: "123",
-    config: {
-        log_config: {
-            template: "[%t] %l: %n"
-        }
-    }
-});
-
-obj.finalityStore.subscribe((hashes) => {
-	const now = Date.now();
-	for (const hash of hashes) {
-		log.info(`Vertex ${hash} finalized at ${now}`);
-	}
-});
-obj.subscribe((object, origin, vertices) => {
-    if (origin === "merge") {
-        const now = Date.now();
-		for (const vertex of vertices) {
-			log.info(`Vertex ${vertex.hash} merged at ${now}`);
-		}
-    }
-	if (origin === "callFn") {
-		const now = Date.now();
-		for (const vertex of vertices) {
-			log.info(`Vertex ${vertex.hash} created at ${now}`);
-		}
-	}
+node.networkNode.subscribe(opts.topic);
+node.networkNode.addGroupMessageHandler(opts.topic, async (e) => {
+    const message = MessagesPb.Message.decode(e.detail.msg.data);
+    const value = Buffer.from(message.data).toString("utf-8");
+    const now = Date.now();
+    console.log(`${value} received at ${now}`);
 });
 
 await delay(5000);
 
-const drp = obj.drp;
+let value = await digestMessage(opts.seed);
 
-let value = digestMessage(opts.seed);
-
-const interval = setInterval(() => {
-    drp.add(value);
-    value = digestMessage(value);
+const interval = setInterval(async () => {
+    await node.networkNode.broadcastMessage(opts.topic, {
+        sender: node.networkNode.peerId,
+        type: 0,
+        data: new Uint8Array(Buffer.from(value)),
+    });
+    const now = Date.now();
+    console.log(`${value} created at ${now}`);
+    value = await digestMessage(value);
 }, 500);
 
 setTimeout(() => {
