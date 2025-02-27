@@ -44,7 +44,7 @@ for zone in network.filter_zones(reliability__in=["reliable", "home", "constrain
         host.add_process(
             "/usr/bin/node",
             f"{drpshadow.data_directory}/node.js --ip {host.ip_addr} --topic 123 --seed {host.name}",
-            {"DEBUG": "libp2p:*yamux*"},
+            {"DEBUG": "*webrtc:trace"},
             "running",
         )
         drpshadow.add_host(host)

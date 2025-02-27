@@ -25,7 +25,7 @@ class DrpShadow:
         if data_directory is None:
             self.data_directory = abspath(datetime.now().strftime("%y%m%d-%H%M%S"))
         else:
-            self.data_directory = data_directory
+            self.data_directory = abspath(data_directory)
 
         self.network_path = f"network.gml"
         if template_directory:
