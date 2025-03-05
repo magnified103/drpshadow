@@ -1,9 +1,7 @@
 import { Command, Option } from "commander";
 import { DRPNode } from "@ts-drp/node";
-import { MessagesPb } from "@ts-drp/types";
-import { SetDRP } from "@ts-drp/blueprints";
+import { Message } from "@ts-drp/types";
 import { Logger } from "@ts-drp/logger";
-import { ObjectACL } from "@ts-drp/object";
 // import { admins } from "./admins.js";
 
 // import { raceEvent } from "race-event";
@@ -71,7 +69,7 @@ await delay(25000);
 
 node.networkNode.subscribe(opts.topic);
 node.networkNode.addGroupMessageHandler(opts.topic, async (e) => {
-    const message = MessagesPb.Message.decode(e.detail.msg.data);
+    const message = Message.decode(e.detail.msg.data);
     const value = Buffer.from(message.data).toString("utf-8");
     const now = Date.now();
     console.log(`${value} received at ${now}`);

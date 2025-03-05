@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dir", help="The log directory")
+parser.add_argument("--data", help="The log directory", required=True)
 args = parser.parse_args()
 
 LOCATIONS = [
@@ -41,25 +41,26 @@ class VertexInfo:
         self.host: HostInfo = None
 
 
+START_TIMESTAMP = 946684800000
 vertices: dict[str, VertexInfo] = {}
 
 for location in LOCATIONS:
     for reliability in RELIABILITIES[:3]:
-        for i in range(1):
+        for i in range(5):
             log_file = (
-                f"{args.dir}/hosts/node-{location}-{reliability}-{i}/node.1000.stdout"
+                f"{args.data}/hosts/node-{location}-{reliability}-{i}/node.1000.stdout"
             )
 
             with open(log_file, "r") as f:
                 data = f.read()
                 for value, timestamp in re.findall(r"(\w+) created at (\d+)", data):
                     vertices.setdefault(value, VertexInfo())
-                    vertices[value].creation_timestamp = int(timestamp)
+                    vertices[value].creation_timestamp = int(timestamp) - START_TIMESTAMP
                     vertices[value].host = HostInfo(location, reliability)
                 for value, timestamp in re.findall(r"(\w+) received at (\d+)", data):
                     vertices.setdefault(value, VertexInfo())
                     vertices[value].merge_info.append(
-                        (int(timestamp), HostInfo(location, reliability))
+                        (int(timestamp) - START_TIMESTAMP, HostInfo(location, reliability))
                     )
 
 by_reliability_scatter = {}
@@ -96,7 +97,7 @@ for i, rel_i in enumerate(RELIABILITIES[:3]):
         axs[i].scatter(
             x=creation_timestamp,
             y=timestamp,
-            s=1,
+            s=0.5,
             c=COLORS[j],
             label=f"{RELIABILITIES[j]}",
         )
@@ -107,6 +108,7 @@ for i, rel_i in enumerate(RELIABILITIES[:3]):
 
 fig.supxlabel("Timestamp")
 fig.supylabel("Latency")
-fig.suptitle(f"PubSub latency per reliability for {42} nodes, {2} ops/s")
+fig.suptitle(f"PubSub latency per reliability for {120} nodes, {2} ops/s")
 fig.tight_layout()
-fig.savefig("dist2.svg")
+fig.savefig(f"{args.data}/dist2.svg")
+fig.savefig(f"{args.data}/dist2.png")
