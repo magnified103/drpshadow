@@ -38,7 +38,7 @@ class Network:
                 link.src.name,
                 link.dst.name,
                 label=f"{link.src.name} to {link.dst.name}",
-                latency=f"{link.latency} ms",
+                latency=f"{round(link.latency * 1000000)} ns",
                 packet_loss=link.packet_loss,
             )
 

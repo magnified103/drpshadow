@@ -42,7 +42,9 @@ class EthShadowNetwork(Network):
         self.locations = {}
         self.reliabilities: list[Reliability] = []
 
-    def add_location(self, name: str, params: list[tuple[str, int, float]]):
+    def add_location(self, name: str, params: list[tuple[str, float, float]]):
+        if name in self.locations:
+            raise ValueError(f"Location {name} already exists")
         self.locations[name] = params
 
     def add_reliability(self, reliability: Reliability):
