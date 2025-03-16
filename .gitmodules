@@ -7,3 +7,6 @@
 [submodule "shadow"]
 	path = shadow
 	url = https://github.com/magnified103/shadow.git
+[submodule "bonsai"]
+	path = bonsai
+	url = https://github.com/magnified103/bonsai.git
