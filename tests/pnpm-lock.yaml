@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@libp2p/simple-metrics':
+        specifier: link:../js-libp2p/packages/metrics-simple
+        version: link:../js-libp2p/packages/metrics-simple
       '@ts-drp/blueprints':
         specifier: link:../ts-drp/packages/blueprints
         version: link:../ts-drp/packages/blueprints
+      '@ts-drp/interval-runner':
+        specifier: link:../ts-drp/packages/interval-runner
+        version: link:../ts-drp/packages/interval-runner
       '@ts-drp/logger':
         specifier: link:../ts-drp/packages/logger
         version: link:../ts-drp/packages/logger

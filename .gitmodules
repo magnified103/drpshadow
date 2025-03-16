@@ -4,3 +4,6 @@
 [submodule "js-libp2p"]
 	path = js-libp2p
 	url = https://github.com/magnified103/js-libp2p.git
+[submodule "shadow"]
+	path = shadow
+	url = https://github.com/magnified103/shadow.git

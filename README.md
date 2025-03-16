@@ -6,17 +6,6 @@ Inspired by [Ethshadow](https://github.com/ethereum/ethshadow), DRPshadow is a n
 
 Install the dependencies as described in `https://shadow.github.io/docs/guide/install_dependencies.html`.
 
-Install Shadow
-
-```sh
-git clone https://github.com/magnified103/shadow.git
-cd shadow
-git checkout temp_work
-./setup build --clean --test
-./setup test    # the ioctl test may fails
-./setup install
-```
-
 Install DRPshadow (it is recommended to set up a separate python environment (`venv`) before using pip)
 
 ```sh
@@ -24,6 +13,18 @@ git clone https://github.com/magnified103/drpshadow.git
 cd drpshadow
 git submodule update --init --recursive
 pip install -e .
+```
+
+Install Shadow
+
+```sh
+cd shadow
+./setup build --clean --test
+./setup test    # the ioctl test may fails
+./setup install
+cd shadowtools
+pip install -e .
+cd ../..
 ```
 
 Build js-libp2p

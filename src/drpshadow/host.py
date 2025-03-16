@@ -16,6 +16,7 @@ class Host:
         args: list[str],
         environment: dict[str, str],
         expected_final_state: str,
+        start_time = 0
     ):
         self.processes.append(
             {
@@ -23,5 +24,6 @@ class Host:
                 "args": args,
                 "environment": environment,
                 "expected_final_state": expected_final_state,
+                "start_time": start_time,
             }
         )

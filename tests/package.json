@@ -11,7 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@libp2p/simple-metrics": "link:../js-libp2p/packages/metrics-simple",
     "@ts-drp/blueprints": "link:../ts-drp/packages/blueprints",
+    "@ts-drp/interval-runner": "link:../ts-drp/packages/interval-runner",
     "@ts-drp/logger": "link:../ts-drp/packages/logger",
     "@ts-drp/network": "link:../ts-drp/packages/network",
     "@ts-drp/node": "link:../ts-drp/packages/node",

@@ -13,6 +13,8 @@ dependencies = [
   "networkx",
   "numpy",
   "matplotlib",
+  "bonsai-network-generator @ git+https://github.com/magnified103/bonsai.git@5be64806",
+  "bonsai-network @ git+https://github.com/magnified103/bonsainet.git@93d46941"
 ]
 
 [project.urls]
