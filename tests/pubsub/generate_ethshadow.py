@@ -11,16 +11,16 @@ from drpshadow.bonsai import get_default_network
 random.seed(0)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--loc", help="Number of locations", type=int, default=50)
+parser.add_argument("--loc", help="Number of locations", type=int, default=30)
 parser.add_argument(
     "--output",
     help="Output directory",
     default=datetime.now().strftime("%y%m%d-%H%M%S"),
 )
-parser.add_argument("--nodes", help="Number of nodes", type=int, default=100)
+parser.add_argument("--nodes", help="Number of nodes", type=int, default=90)
 args = parser.parse_args()
 
-if args.nodes % args.loc != 0:
+if args.nodes % (args.loc * 3) != 0:
     raise ValueError("Number of nodes must be divisible by number of locations")
 
 network = get_default_network(args.loc)
@@ -51,8 +51,8 @@ for zone in random.sample(
     drpshadow.add_host(host)
     index += 1
 
-for zone in network.filter_zones(reliability__in=["home"]):
-    for i in range(args.nodes // args.loc):
+for zone in network.filter_zones(reliability__in=["reliable", "home", "constrained"]):
+    for i in range(args.nodes // (args.loc * 3)):
         host = Host(
             f"node-{zone.name}-{i}",
             zone,
@@ -66,4 +66,4 @@ for zone in network.filter_zones(reliability__in=["home"]):
         )
         drpshadow.add_host(host)
 
-drpshadow.generate_yaml(f"{args.output}/shadow.yml")
+drpshadow.generate_yaml(f"{args.output}/config.yml")

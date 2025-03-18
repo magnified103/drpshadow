@@ -3,15 +3,23 @@ import { DRPNode } from "@ts-drp/node";
 import { bootstrap_peers } from "./bootstrap_peers.js";
 
 export const program = new Command();
-program.version("0.0.1");
+program
+	.name("drp-bootstrap")
+	.version("0.0.1");
 
-program.addOption(
-	new Option("--ip <address>", "IPv4 address of the node"),
-);
-program.addOption(new Option("--seed <seed>", "private key seed"));
+program
+	.option("--ip <address>", "IPv4 address of the node")
+	.option("--seed <seed>", "private key seed")
+    .option("--peer_discovery_interval <ms>", "peer discovery interval");
 
 program.parse(process.args);
 const opts = program.opts();
+
+// setup peer discovery interval
+let peer_discovery_interval = parseInt(opts.peer_discovery_interval);
+if (isNaN(peer_discovery_interval)) {
+    peer_discovery_interval = 5000;
+}
 
 const bootstrap_node = new DRPNode({
 	network_config: {
@@ -22,10 +30,15 @@ const bootstrap_node = new DRPNode({
 		],
 		bootstrap: true,
 		bootstrap_peers,
-		private_key_seed: opts.seed,
 		log_config: {
             template: "[%t] %l: %n"
+        },
+		pubsub: {
+            peer_discovery_interval,
         }
+	},
+	keychain_config: {
+	    private_key_seed: opts.seed,
 	},
 });
 

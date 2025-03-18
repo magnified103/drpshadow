@@ -1,7 +1,11 @@
 import { Command, Option } from "commander";
 import { DRPNode } from "@ts-drp/node";
-import { SetDRP } from "@ts-drp/blueprints";
+import { Message } from "@ts-drp/types";
 import { Logger } from "@ts-drp/logger";
+import { IntervalRunner } from "@ts-drp/interval-runner"
+import { bootstrap_peers } from "./bootstrap_peers.js";
+import { simpleMetrics } from "@libp2p/simple-metrics";
+import { SetDRP } from "@ts-drp/blueprints";
 import { ObjectACL } from "@ts-drp/object";
 // import { admins } from "./admins.js";
 
@@ -36,22 +40,12 @@ const opts = program.opts();
 
 const node = new DRPNode({
     network_config: {
-        bootstrap_peers: [
-            "/ip4/11.0.0.1/tcp/50000/ws/p2p/16Uiu2HAmDa8croH4zLsNWy41QBoj28rYDsRNDzBMWnz8BsCdwDBs",
-            "/ip4/11.1.0.1/tcp/50000/ws/p2p/16Uiu2HAmJstwH5yYD4zvW2QiPMbPnnjBooqGp7JL7XYNz3oX2dtV",
-            "/ip4/11.2.0.1/tcp/50000/ws/p2p/16Uiu2HAmHjWPUfM9XzSQnHE4AHWVZ5g2dh8PHT85PWkofqtr2zA5",
-            "/ip4/11.3.0.1/tcp/50000/ws/p2p/16Uiu2HAm1hspuJ9iNtTB4JPnZY3UF9V8fC3DEBUNgRUcJjPZvzWJ",
-            "/ip4/11.4.0.1/tcp/50000/ws/p2p/16Uiu2HAkvzeWL2TeWG5dxgVgfV726281cRuRUbXjt1nxQ48rhknP",
-            "/ip4/11.5.0.1/tcp/50000/ws/p2p/16Uiu2HAm8tpPFUUoUApaAQA5hEvxMreyTDexULYxmQ2xpGkhf43x",
-            "/ip4/11.6.0.1/tcp/50000/ws/p2p/16Uiu2HAmK7xLcgz6Y8KAjk9P6AZCEVtj7rDV27pnuHf5Q1DM4Te1",
-            "/ip4/11.7.0.1/tcp/50000/ws/p2p/16Uiu2HAkwgvajBoVeSGq9RidM2VGRCmitccptFtqcaAhY8dAEusV",
-        ],
-        private_key_seed: opts.seed,
+        bootstrap_peers,
         log_config: {
             template: "[%t] %l: %n"
-        }
+        },
     },
-	credential_config: {
+	keychain_config: {
 	    private_key_seed: opts.seed,
 	},
 	log_config: {
@@ -61,12 +55,10 @@ const node = new DRPNode({
 
 await node.start();
 
-log.info("Credential: ", node.keychain.getPublicCredential())
-
 const libp2pNode = node.networkNode["_node"]
 // await raceEvent(libp2pNode, 'transport:listening')
 
-await delay(25000);
+await delay(10000);
 
 const obj = await node.createObject({
     drp: new SetDRP(),
@@ -103,14 +95,19 @@ obj.subscribe((object, origin, vertices) => {
 await delay(5000);
 
 const drp = obj.drp;
+let value = await digestMessage(opts.seed);
 
-let value = digestMessage(opts.seed);
+const runner = new IntervalRunner({
+    interval: 500,
+    fn: async () => {
+        drp.add(value);
+        value = await digestMessage(value);
+        return true;
+    }
+});
 
-const interval = setInterval(() => {
-    drp.add(value);
-    value = digestMessage(value);
-}, 500);
+runner.start();
 
 setTimeout(() => {
-    clearInterval(interval);
-}, 15000);
+    runner.stop();
+}, 30000);

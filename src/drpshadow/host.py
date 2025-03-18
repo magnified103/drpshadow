@@ -16,7 +16,7 @@ class Host:
         args: list[str],
         environment: dict[str, str],
         expected_final_state: str,
-        start_time = 0
+        start_time: float = 0,  # in seconds
     ):
         self.processes.append(
             {
@@ -24,6 +24,6 @@ class Host:
                 "args": args,
                 "environment": environment,
                 "expected_final_state": expected_final_state,
-                "start_time": start_time,
+                "start_time": f"{round(start_time * 10**9)} ns",
             }
         )

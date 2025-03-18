@@ -4,10 +4,14 @@ import logging
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--data", type=str, required=True)
-parser.add_argument("-o", "--output", type=argparse.FileType("w"), required=True)
+parser.add_argument("--data", type=str, default="shadow.data")
+parser.add_argument("-o", "--output", default="bootstrap_peers.js", type=argparse.FileType("w"))
 
 args = parser.parse_args()
+
+print("Reading data from", os.path.abspath(args.data))
+print("Writing to", os.path.abspath(args.output.name))
+input("Process?")
 
 logger = logging.getLogger("parse_bootstrap_addr")
 
