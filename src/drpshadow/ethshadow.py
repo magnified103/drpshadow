@@ -72,8 +72,10 @@ class EthShadowNetwork(Network):
         zone_mapping = {}
 
         for i, (location_name, _) in enumerate(self.locations.items()):
+            assert i < 32 * 256, "Too many locations"
             for j, reliability in enumerate(self.reliabilities):
-                zone = EthShadowZone(location_name, reliability, f"11.{i}.{j}.0/24")
+                assert j < 256, "Too many reliabilities"
+                zone = EthShadowZone(location_name, reliability, f"{32 + (i >> 8)}.{i & 255}.{j}.0/24")
                 self.add_zone(zone)
                 zone_mapping[location_name, reliability.name] = zone
 
