@@ -6,12 +6,16 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str, default="shadow.data")
 parser.add_argument("-o", "--output", default="bootstrap_peers.js", type=argparse.FileType("w"))
+parser.add_argument("-y", "--yes", action="store_true")
 
 args = parser.parse_args()
 
 print("Reading data from", os.path.abspath(args.data))
 print("Writing to", os.path.abspath(args.output.name))
-input("Process?")
+if not args.yes:
+    choice = input("Process? [y/n]")
+    if not choice.lower().startswith("y"):
+        exit()
 
 logger = logging.getLogger("parse_bootstrap_addr")
 
