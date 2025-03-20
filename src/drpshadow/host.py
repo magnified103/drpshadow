@@ -13,7 +13,7 @@ class Host:
     def add_process(
         self,
         path: str,
-        args: list[str],
+        args: str|list[str],
         environment: dict[str, str],
         expected_final_state: str,
         start_time: float = 0,  # in seconds

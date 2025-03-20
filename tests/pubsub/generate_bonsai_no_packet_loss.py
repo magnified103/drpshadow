@@ -19,6 +19,7 @@ parser.add_argument(
     default=datetime.now().strftime("%y%m%d-%H%M%S"),
 )
 parser.add_argument("--nodes", help="Number of nodes", type=int, default=100)
+parser.add_argument("--stop", help="Stop time (sec)", type=float, default=90)
 args = parser.parse_args()
 
 if args.nodes % args.loc != 0:
@@ -49,7 +50,7 @@ network.build_zones_and_links()
 output_dir = abspath(args.output)
 
 drpshadow = DrpShadow(network, output_dir)
-drpshadow.config["general"]["stop_time"] = "90 sec"
+drpshadow.config["general"]["stop_time"] = f"{round(args.stop * 10**9)} ns"
 
 shutil.copytree("template", output_dir)
 
@@ -64,12 +65,19 @@ for zone in random.sample(
         f"bootstrap-{zone.name}",
         zone,
     )
+    start_time = random.uniform(0, peer_discovery_interval) # randomize the starting time
     host.add_process(
         "/usr/bin/node",
-        f"--expose-gc {output_dir}/bootstrap.js --ip {host.ip_addr} --peer_discovery_interval {peer_discovery_interval*1000} --seed bootstrap{index:02}",
+        [
+            "--expose-gc",
+            f"{output_dir}/bootstrap.js",
+            "--ip", f"{host.ip_addr}",
+            "--peer_discovery_interval", f"{peer_discovery_interval*1000}",
+            "--seed", f"bootstrap{index:02}",
+        ],
         {"DEBUG": "libp2p:*yamux*"},
         "running",
-        start_time=random.uniform(0, peer_discovery_interval),  # randomize the starting time
+        start_time=start_time,
     )
     drpshadow.add_host(host)
     index += 1
@@ -80,12 +88,21 @@ for zone in network.filter_zones(reliability__in=["home-no-loss"]):
             f"node-{zone.name}-{i}",
             zone,
         )
+        start_time=10+random.uniform(0, peer_discovery_interval)    # randomize the starting time
         host.add_process(
             "/usr/bin/node",
-            f"--expose-gc {output_dir}/node.js --ip {host.ip_addr} --topic 123 --peer_discovery_interval {peer_discovery_interval*1000} --seed {host.name}",
+            [
+                "--expose-gc",
+                f"{output_dir}/node.js",
+                "--ip", f"{host.ip_addr}",
+                "--topic", "123",
+                "--peer_discovery_interval", f"{peer_discovery_interval*1000}",
+                "--stop", f"{round((args.stop - start_time) * 1000)}",
+                "--seed", f"{host.name}",
+            ],
             {"DEBUG": "libp2p:*yamux*"},
             "running",
-            start_time=10+random.uniform(0, peer_discovery_interval),   # randomize the starting time
+            start_time=start_time,
         )
         drpshadow.add_host(host)
 

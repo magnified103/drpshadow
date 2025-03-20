@@ -14,14 +14,21 @@ program
     .option("--ip <address>", "IPv4 address of the node")
     .option("--seed <seed>", "private key seed")
     .option("--topic <topic>", "topic to subscribe to")
-    .option("--peer_discovery_interval <ms>", "peer discovery interval");
+    .option("--peer_discovery_interval <ms>", "peer discovery interval")
+    .option("--stop <ms>", "stop after ms")
 program.parse(process.args);
 const opts = program.opts();
 
 // setup peer discovery interval
-let peer_discovery_interval = parseInt(opts.peer_discovery_interval);
+const peer_discovery_interval = parseInt(opts.peer_discovery_interval);
 if (isNaN(peer_discovery_interval)) {
     peer_discovery_interval = 5000;
+}
+
+// setup stop time
+const stop_time = parseInt(opts.stop);
+if (isNaN(stop_time)) {
+    throw new Error("Invalid stop time");
 }
 
 // setup DRPNode
@@ -43,10 +50,9 @@ const node = new DRPNode({
 	}
 });
 
-await node.start();
-
 const delay = ms => new Promise(res => setTimeout(res, ms));
-await delay(10000);
+
+await Promise.all([node.start(), delay(10000)]);
 
 node.networkNode.subscribe(opts.topic);
 node.networkNode.addGroupMessageHandler(opts.topic, async (e) => {
@@ -90,4 +96,4 @@ runner.start();
 
 setTimeout(() => {
     runner.stop();
-}, 30000);
+}, stop_time - 30000);

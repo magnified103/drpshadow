@@ -43,6 +43,7 @@ for dir in get_directories():
     host = os.path.basename(dir)
     hosts.append(host)
     with open(f"{dir}/node.1000.stdout", "r") as f:
+        print(f"Opening {f.name} for processing")
         data = f.read()
         for msg_id, timestamp in re.findall(r"(\w+) created at (\d+)", data):
             record = message_info.setdefault(msg_id, MessageRecord(msg_id))
@@ -102,7 +103,7 @@ plt.gca().yaxis.set_minor_formatter(ScalarFormatter())
 
 plt.xlabel("Timestamp")
 plt.ylabel("Latency")
-plt.suptitle(f"PubSub latency for {len(online_hosts)} nodes, {2} ops/s, {args.percentile}th percentile")
+plt.suptitle(f"PubSub latency overtime for {len(online_hosts)} nodes, {2} ops/s, {args.percentile}th percentile")
 # plt.legend()
 # plt.colorbar()
 # plt.tight_layout()

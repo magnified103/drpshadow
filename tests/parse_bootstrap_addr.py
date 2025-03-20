@@ -5,21 +5,22 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str, default="shadow.data")
-parser.add_argument("-o", "--output", default="bootstrap_peers.js", type=argparse.FileType("w"))
+parser.add_argument("-o", "--output", default="bootstrap_peers.js")
 parser.add_argument("-y", "--yes", action="store_true")
 
 args = parser.parse_args()
 
 print("Reading data from", os.path.abspath(args.data))
-print("Writing to", os.path.abspath(args.output.name))
+print("Writing to", os.path.abspath(args.output))
 if not args.yes:
     choice = input("Process? [y/n]")
     if not choice.lower().startswith("y"):
         exit()
 
+output = open(args.output, "w")
 logger = logging.getLogger("parse_bootstrap_addr")
 
-args.output.write("export const bootstrap_peers = [];\n")
+output.write("export const bootstrap_peers = [];\n")
 
 for dir in os.listdir(f"{args.data}/hosts"):
     if os.path.isdir(f"{args.data}/hosts/{dir}") and dir.startswith("bootstrap"):
@@ -33,4 +34,4 @@ for dir in os.listdir(f"{args.data}/hosts"):
                 logger.error(f"Error parsing {log_file}")
                 break
 
-            args.output.write(f"bootstrap_peers.push(\"{addr}\");\n")
+            output.write(f"bootstrap_peers.push(\"{addr}\");\n")
