@@ -55,8 +55,7 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 await Promise.all([node.start(), delay(10000)]);
 
 node.networkNode.subscribe(opts.topic);
-node.networkNode.addGroupMessageHandler(opts.topic, async (e) => {
-    const message = Message.decode(e.detail.msg.data);
+node.messageQueueManager.subscribe(opts.topic, (message) => {
     const value = Buffer.from(message.data).toString("utf-8");
     const now = Date.now();
     console.log(`${value} received at ${now}`);
@@ -83,6 +82,7 @@ const runner = new IntervalRunner({
         await node.networkNode.broadcastMessage(opts.topic, {
             sender: node.networkNode.peerId,
             type: 0,
+            objectId: opts.topic,
             data: new Uint8Array(Buffer.from(value)),
         });
         const now = Date.now();
